@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"errors"
+	"time"
 
 	"github.com/elvenworks/pubsub-conector/internal/delivery/worker/publisher"
 	"github.com/elvenworks/pubsub-conector/internal/delivery/worker/subscriber"
@@ -82,12 +83,21 @@ func (p *Pubsub) PublishAndSubscriptionOnce(topic string, message []byte) error 
 	return nil
 }
 
-func (p *Pubsub) GetLag(topic string) (lagTotal int64, err error) {
+func (p *Pubsub) SubscriptionNack(topic string, message []byte, seconds time.Duration) error {
 	clientSubscriber, err := subscriber.NewClientSubscriber(p.config)
-
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return clientSubscriber.GetLag(topic)
+	success, err := clientSubscriber.SubscriptionNack(topic, seconds)
+	if err != nil {
+		return err
+	}
+
+	if !success {
+		return errors.New("any message has been consumed")
+	}
+
+	return nil
+
 }
