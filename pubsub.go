@@ -19,16 +19,17 @@ type Pubsub struct {
 	publisher publisher.IPublisher
 }
 
-func InitPubsub(secret Secret) *Pubsub {
+func InitPubsub(secret Secret) (p *Pubsub, err error) {
 	config, err := pubsub.NewConfig(secret.JsonCredentials)
 
 	if err != nil {
 		logrus.Errorf("Failed to send message to pubsub, err: %s\n", err)
+		return nil, err
 	}
 
 	return &Pubsub{
 		config: config,
-	}
+	}, nil
 }
 
 func (p *Pubsub) Publish(topic string, message []byte, attributes map[string]string) error {
@@ -83,7 +84,7 @@ func (p *Pubsub) PublishAndSubscriptionOnce(topic string, message []byte) error 
 	return nil
 }
 
-func (p *Pubsub) SubscriptionNack(topic string, message []byte, timeout time.Duration) error {
+func (p *Pubsub) SubscriptionNack(topic string, timeout time.Duration) error {
 	clientSubscriber, err := subscriber.NewClientSubscriber(p.config)
 	if err != nil {
 		return err
