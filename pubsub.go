@@ -84,7 +84,7 @@ func (p *Pubsub) PublishAndSubscriptionOnce(topic string, message []byte) error 
 	return nil
 }
 
-func (p *Pubsub) SubscriptionNack(topic string, message []byte, timeout time.Duration) error {
+func (p *Pubsub) SubscriptionNack(topic string, timeout time.Duration) error {
 	clientSubscriber, err := subscriber.NewClientSubscriber(p.config)
 	if err != nil {
 		return err
