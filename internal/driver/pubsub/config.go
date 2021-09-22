@@ -3,6 +3,8 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/elvenworks/pubsub-conector/internal/domain"
@@ -27,8 +29,7 @@ func NewConfig(jsonCredentials []byte) (c *Config, err error) {
 	}
 
 	if credentials.ProjectID == "" {
-		logrus.Errorf("ProjectID not found to pubsub.\n")
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("ProjectID not found to pubsub."))
 	}
 
 	creds, err := google.CredentialsFromJSON(context, jsonCredentials, pubsub.ScopePubSub)
